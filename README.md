@@ -1,3 +1,5 @@
+![alt text](https://github.com/moho07/Console-Chess/blob/master/Chess.png?raw=true)
+
 # Chess
 A Fully Functional Console Chess Game made in C++
 
