@@ -9,15 +9,20 @@
 #include "Board.h"
 #include "ChessBoard.h"
 #include "Lastmove.h"
+#include "Global.h"
 
 /*
+
 Excepiton List:
 
 1.0f: Castling Applied
 2.0f: Enpassant Applied
+3.0f: Corrupted Pawn Promotion Records File
 
 
 10f: Game Over
+
+e: Corrupted File
 
 -1: Invalid Move
 -6: Invalid rows or columns entered
@@ -36,7 +41,7 @@ void exception(int e)
 	{
 	case -1:std::cout << "Invalid Move!\n"; break;
 	case -6:std::cout << "Invalid Row or Column entered \n"; break;
-	case -7:std::cout << "Invalid Piece Selected.Piece Color not same as Player\n"; break;
+	case -7:std::cout << "Invalid Piece Color Selected\n"; break;
 	case -8:std::cout << "No Piece Selected\n"; break;
 	case -9:std::cout << "Castle not allowed when King in Check\n"; break;
 	case -10:std::cout << "Invalid Move. King will be in check\n"; break;
@@ -44,6 +49,7 @@ void exception(int e)
 	}
 }
 
+bool readfromfile = false;
 
 int main()
 {
@@ -123,9 +129,17 @@ int main()
 			else if (start == "S")
 			{
 				std::ofstream f("Chess.dat", std::ios::binary);
+				std::ofstream g("PawnPromotion.dat", std::ios::binary);
+
 				for (int i = 0; i < store.size(); i++)
 					f.write((char*)&store[i], sizeof(store_move));
+
+				if(!pprecords.empty())
+					for (int i = 0; i < pprecords.size(); i++)
+						g.write((char*)&pprecords[i], sizeof(char));
+
 				f.close();
+				g.close();
 
 				std::cout << "Game Saved Succesfully!\n";
 
@@ -133,27 +147,51 @@ int main()
 			}
 			else if (start == "L")
 			{
-				std::ifstream f("Chess.dat", std::ios::binary);
+				readfromfile = true;
+				store.clear();
+				pprecords.clear();
+				
 				store_move store_temp;
 				Game game_temp;
+				char pp;
 				game_temp.initialize(p1, p2);
 				game_temp.set_currentplayer(p1, "p1");
-				while (f.read((char*)&store_temp, sizeof(store_move)))
+
+				std::ifstream f("Chess.dat", std::ios::binary);
+				std::ifstream g("PawnPromotion.dat", std::ios::binary);
+
+				if (g.peek() != std::ifstream::traits_type::eof())
+					while (g.read((char*)&pp, sizeof(char)))
+						pprecords.push_back(pp);
+
+				try
 				{
-					game_temp.playermove(store_temp.start_x, store_temp.start_y, store_temp.end_x, store_temp.end_y);
+					while (f.read((char*)&store_temp, sizeof(store_move)))
+					{
+						game_temp.playermove(store_temp.start_x, store_temp.start_y, store_temp.end_x, store_temp.end_y);
 
-					if (game_temp.get_current_player() == "p1")
-						game_temp.set_currentplayer(p2, "p2");
-					else
-						game_temp.set_currentplayer(p1, "p1");
+						if (game_temp.get_current_player() == "p1")
+							game_temp.set_currentplayer(p2, "p2");
+						else
+							game_temp.set_currentplayer(p1, "p1");
 
-					system("CLS");
+						system("CLS");
+					}
+				}
+				catch (char e)
+				{
+					std::cout << "File Corrupted, Cannot Load Game\n\n";
+					f.close();
+					readfromfile = false;
+					continue;
 				}
 				f.close();
 
 				game = game_temp;
 
 				std::cout << "Game Loaded Succesfully!\n\n";
+
+				readfromfile = false;
 
 				continue;
 			}

@@ -130,6 +130,4 @@ void printboard(Board b)
     std::cout << "--\n";
 
     std::cout << "COMMANDS:     (N)ew Game     (U)ndo     (C)aptured     (S)ave     (L)oad     (R)esign     (Q)uit\n";
-
-
 }

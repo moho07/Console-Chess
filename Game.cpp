@@ -6,6 +6,7 @@
 #include "Canmove.h"
 #include "Lastmove.h"
 #include "ChessBoard.h"
+#include "Global.h"
 
 last_move last;
 std::vector <store_move> store;
@@ -25,11 +26,11 @@ void Game::playermove(int start_x, int start_y, int end_x, int end_y)
 	if (start_x < 0 || start_x > 7 || start_y < 0 || start_y > 7 || end_x < 0 || end_x > 7 || end_y < 0 || end_y > 7)
 		throw - 6;
 
-	if (currentplayer.get_side() != board.get_box(start_x, start_y).get_piece().Is_white())
-		throw - 7;
-
 	if (board.get_box(start_x, start_y).get_piece_name() == "none")
 		throw - 8;
+
+	if (currentplayer.get_side() != board.get_box(start_x, start_y).get_piece().Is_white())
+		throw - 7;
 
 	if (start_x == end_x && start_y == end_y)
 		throw - 11;
@@ -61,6 +62,8 @@ void Game::move(Spot start, Spot end)
 			if (start.get_piece_name() == "pawn" && (end.get_x() == 7 || end.get_x() == 0))
 				m.pawnpromotion(board_temp, end, start.get_piece().Is_white());
 		}
+		else if (readfromfile)
+			throw 'e';
 		else
 			throw - 1;
 	}
@@ -77,7 +80,7 @@ void Game::move(Spot start, Spot end)
 
 				if (end.get_y() == 6)
 				{
-					
+
 					board_temp.get_box(7, 7).Change_first_move("rook");
 					m.king_castle(board_temp, "king", true);
 				}
@@ -108,6 +111,8 @@ void Game::move(Spot start, Spot end)
 		}
 		else if (e == 2.0f)
 			m.enpassant(board_temp, start, end);
+		else if (e == 3.0f)
+			throw 'e';
 	}
 
 	if (m.king_in_check(board_temp, start.get_piece().Is_white(), false))
@@ -175,7 +180,3 @@ std::vector<std::string> Game::get_captured(bool white)
 	}
 
 }
-
-
-
-

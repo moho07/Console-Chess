@@ -87,4 +87,3 @@ int Selector::Get_first_move_spaces()
 	else
 		return 0;
 }
-

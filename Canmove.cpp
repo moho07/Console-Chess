@@ -301,7 +301,12 @@ bool Pawn_canMove(Board board, Spot start, Spot end)
 
 	if (x == 1)
 	{
-		Spot maybe_pawn = board.get_box(end.get_x() - 1, end.get_y());
+		Spot maybe_pawn;
+
+		if(start.get_piece().Is_white())
+			maybe_pawn = board.get_box(end.get_x() + 1, end.get_y());
+		else
+			maybe_pawn = board.get_box(end.get_x() - 1, end.get_y());
 
 		if (end.get_piece().Is_there_piece())
 		{

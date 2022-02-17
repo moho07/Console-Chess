@@ -60,5 +60,3 @@ void Board::change_box(int x, int y, Spot piece, bool empty)
 		boxes[x][y].set_y(y);
 	}
 }
-
-

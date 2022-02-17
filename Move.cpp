@@ -1,5 +1,8 @@
 #include "Move.h"
 #include "Canmove.h"
+#include "Global.h"
+
+std::deque<char> pprecords;
 
 void Move::make_move(Board& board, Spot start, Spot end)
 {
@@ -77,50 +80,67 @@ void Move::enpassant(Board& board, Spot start, Spot end)
 		else
 		{
 			std::cout << "Black pawn is killed through Enpassant\n";
-			piece_killed_black.push_back(board.get_box(end.get_x() - 1, end.get_y()));
+			piece_killed_black.push_back(board.get_box(end.get_x() + 1, end.get_y()));
 		}
 	
 	make_move(board, start, end);
 
-	board.change_box(end.get_x() - 1, end.get_y(), garbage, true);
+	if(start.get_piece().Is_white())
+		board.change_box(end.get_x() + 1, end.get_y(), garbage, true);
+	else
+		board.change_box(end.get_x() - 1, end.get_y(), garbage, true);
 	
 }
 
 void Move::pawnpromotion(Board& board, Spot end, bool white)
 {
-	char piece = 'N';
+	char piece = 'K';
 
 	Spot promotion;
 
-	while (piece == 'N')
-	{
-		if (white)
-		{
-			std::cout << "Which Piece for White Pawn Promotion?\n";
-			std::cout << "(Q)ueen      (R)ook      (B)ishop      (K)night\n";
-		}
-		else
-		{
-			std::cout << "Which Piece for Black Pawn Promotion?\n";
-			std::cout << "(q)ueen      (r)ook      (b)ishop      (k)night\n";
-		}
-		
-		std::cin >> piece;
+	if (readfromfile && pprecords.empty())
+		throw 3.0f;
 
-		if (piece == 'Q' || piece == 'q')
-			promotion.set(end.get_x(), end.get_y(), "queen", white);
-		else if (piece == 'R' || piece == 'r')
-			promotion.set(end.get_x(), end.get_y(), "rook", white);
-		else if (piece == 'B' || piece == 'b')
-			promotion.set(end.get_x(), end.get_y(), "bishop", white);
-		else if (piece == 'K' || piece == 'k')
-			promotion.set(end.get_x(), end.get_y(), "knight", white);
-		else
+	if (!readfromfile)
+	{
+		while (piece == 'K')
 		{
-			std::cout << "Invalid Text Entered...Try again\n";
-			piece = 'N';
+			if (white)
+			{
+				std::cout << "Which Piece for White Pawn Promotion?\n";
+				std::cout << "(Q)ueen      (R)ook      (B)ishop      K(N)ight\n";
+			}
+			else
+			{
+				std::cout << "Which Piece for Black Pawn Promotion?\n";
+				std::cout << "(q)ueen      (r)ook      (b)ishop      k(n)ight\n";
+			}
+
+			std::cin >> piece;
+
+			if (piece != 'Q' && piece != 'q' && piece != 'R' && piece != 'r' && piece != 'B' && piece != 'b' && piece != 'N' && piece != 'n')
+			{
+				std::cout << "Invalid Text Entered...Try again\n";
+				piece = 'K';
+			}
 		}
 	}
+	else
+	{
+		piece = pprecords[0];
+		pprecords.pop_front();
+	}
+
+	if (piece == 'Q' || piece == 'q')
+		promotion.set(end.get_x(), end.get_y(), "queen", white);
+	else if (piece == 'R' || piece == 'r')
+		promotion.set(end.get_x(), end.get_y(), "rook", white);
+	else if (piece == 'B' || piece == 'b')
+		promotion.set(end.get_x(), end.get_y(), "bishop", white);
+	else if (piece == 'N' || piece == 'n')
+		promotion.set(end.get_x(), end.get_y(), "knight", white);
+
+	pprecords.push_back(piece);
 
 	board.change_box(end.get_x(), end.get_y(), promotion, false);
 }
@@ -474,7 +494,3 @@ bool Move::king_checkmate(Board board, Spot king, Spot piece)
 
 	return true;
 }
-
-
-
-
