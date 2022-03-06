@@ -22,7 +22,7 @@ public:
 	bool Is_white();
 	bool Get_first_move(std::string piece);
 	int Get_first_move_spaces();
-	bool Get_castling() { return king.is_castling_done(); }
+	inline bool Get_castling() { return king.is_castling_done(); }
 };
 
 class Spot
@@ -34,16 +34,16 @@ class Spot
 
 public:
 	void set(int X, int Y, std::string Piece, bool white = false);
-	void set_piece(std::string Piece) { piece = Piece; }
-	std::string get_piece_name() { return piece; }
-	Selector get_piece() { return s; }
-	int get_x() { return x; }
-	void set_x(int X) { x = X; }
-	int get_y() { return y; }
-	void set_y(int Y) { y = Y; }
-	void Change_first_move(std::string piece);
-	void Set_first_move_spaces(int spaces) { s.pawn.first_move_spaces = spaces; }
-	void Set_castling(bool castling) { s.king.set_castling_done(castling); }
+	inline void set_piece(std::string Piece) { piece = Piece; }
+	inline std::string get_piece_name() { return piece; }
+	inline Selector get_piece() { return s; }
+	inline int get_x() { return x; }
+	inline void set_x(int X) { x = X; }
+	inline int get_y() { return y; }
+	inline void set_y(int Y) { y = Y; }
+	inline void Change_first_move(std::string piece);
+	inline void Set_first_move_spaces(int spaces) { s.pawn.first_move_spaces = spaces; }
+	inline void Set_castling(bool castling) { s.king.set_castling_done(castling); }
 };
 
 
